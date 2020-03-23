@@ -884,45 +884,84 @@ const temp = {
 		{
 			"optionNumber": 10,
 			"description": "MTPL",
-			"id": 1000200
+			"id": 1000200,
+			"cost": 10
 		}
 	],
 	"included": true,
 	"insuranceAmountOptions": []
 };
-const listKeysToCleanOut = ["insuranceAmount", "cost", "commissionForColl", "premiumForColl", "loadingForColl", "netPremiumForColl"];
+var temp2 = {
+	"insuredObjects": [
+		{
+			"covers": [
+				{
+					"insuranceAmount": "0.00",
+					"cost": "0.00",
+					"netPremiumForColl": "2166.54",
+					"productLineType": 1,
+					"productLineGroup": 1000220,
+					"commissionForColl": "0.00",
+					"excessOptions": [],
+					"taxForColl": "2.16",
+					"excessAmount": "0.00",
+					"coverOptionName": "MTPL",
+					"loadingForColl": "0.00",
+					"productLineOptionType": {
+						"id": 1000200,
+						"desc": "MTPL"
+					},
+					"premiumForColl": "2168.70",
+					"coverOptions": [
+						{
+							"optionNumber": 10,
+							"description": "MTPL",
+							"id": 1000200
+						}
+					],
+					"included": true,
+					"insuranceAmountOptions": []
+				}
+			]
+		}
+	]
+};
 
-function removeKeys(input, keysToRemove) {
-	keysToRemove.forEach(toRemove => {
-		delete input[toRemove]
+const listKeysToCleanOut = [ "insuranceAmount", "totalYearlyPremium", "taxYearlyPremium", "commissionYearlyAmount", "loadingYearlyPremium", "netYearlyPremium", "taxForColl", "excessAmount", "cost", "commissionForColl", "premiumForColl", "loadingForColl", "netPremiumForColl"];
+
+function removeKeys(input) {
+	listKeysToCleanOut.forEach(toRemove => {
+		delete input[toRemove];
 	});
 	return input;
 }
 
-function findKey(input, keysToRemove) {
+function findKey(input) {
 	input = JSON.parse(JSON.stringify(input));
-	for (let e in input) {
-		if (typeof (input[e]) == "object" && Array.isArray(input[e])) {
-			input[e] = findInArray(input[e]);
-		} else if (typeof (input[e]) == "object" ) {
-			findKey(input[e])
-		} else {
-			input[e] = removeKeys(input, keysToRemove);
+	
+	if (Array.isArray(input)) {
+		input = findInArray(input);
+	} else if (typeof (input) == "object") {
+		for (let e in input) {
+			if (typeof (input[e]) == "object") {
+				input[e] = findKey(input[e]);
+			}
 		}
 	}
+	input = removeKeys(input);
 	return input;
 }
 
 function findInArray(input) {
 	let store = [];
 	if (input != []) {
-		input.forEach(e => {
+		input.forEach(function(e) {
 			store.push(findKey(e));
-		})
+		});
 	}
-	
 	return store;
 }
 
 console.log('Start');
-console.log('index.js:925', findKey(temp, listKeysToCleanOut));
+console.log('index.js:925', JSON.stringify(findKey(inputJson, listKeysToCleanOut), false, 1));
+
