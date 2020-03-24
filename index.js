@@ -954,11 +954,9 @@ function findKey(input) {
 
 function findInArray(input) {
 	let store = [];
-	if (input != []) {
-		input.forEach(function(e) {
-			store.push(findKey(e));
-		});
-	}
+	input.forEach(function(e) {
+		store.push(findKey(e));
+	});
 	return store;
 }
 
